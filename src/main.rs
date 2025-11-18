@@ -1,6 +1,7 @@
 use std::env;
 use std::fs;
 use std::process;
+use std::error::Error;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -10,10 +11,10 @@ fn main() {
         process::exit(1);
     });
 
-    let file_content = fs::read_to_string(config.file_name)
-        .expect("File cant open/read");
-
-    println!("File contents: {file_content}")
+    if let Err(e) = run(config) {
+        println!("App error: {e}");
+        process::exit(1);
+    }
 
 }
 
@@ -36,5 +37,13 @@ impl Config
             file_name: args[2].clone()
         })
     }    
+}
+
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
+
+    let file_content = fs::read_to_string(config.file_name)?;
+
+    println!("File contents: {file_content}");
+    Ok(())
 }
 
