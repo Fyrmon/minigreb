@@ -2,6 +2,7 @@ use std::env;
 use std::fs;
 use std::process;
 use std::error::Error;
+use minigreb::search;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -20,7 +21,7 @@ fn main() {
 
 struct Config
 {
-    _query: String,
+    query: String,
     file_name: String
 }
 
@@ -33,7 +34,7 @@ impl Config
         }
 
         Ok(Config { 
-            _query:args[1].clone(), 
+            query:args[1].clone(), 
             file_name: args[2].clone()
         })
     }    
@@ -41,9 +42,12 @@ impl Config
 
 fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
-    let file_content = fs::read_to_string(config.file_name)?;
+    let file_contents = fs::read_to_string(config.file_name)?;
 
-    println!("File contents: {file_content}");
+    for line in search(&config.query, &file_contents) {
+        println!("{line}");
+    }
+
     Ok(())
 }
 
