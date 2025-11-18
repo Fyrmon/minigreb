@@ -4,16 +4,25 @@ use std::fs;
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    let (_query, file_name) = parse_config(&args);
+    let config = parse_config(&args);
 
-    let file_content = fs::read_to_string(file_name)
+    let file_content = fs::read_to_string(config.file_name)
         .expect("File cant open/read");
 
     println!("File contents: {file_content}")
 
 }
 
-fn parse_config(args: &[String]) -> (&str, &str)
+struct Config
 {
-    (&args[1], &args[2])
+    _query: String,
+    file_name: String
+}
+
+fn parse_config(args: &[String]) -> Config
+{
+    Config { 
+        _query:args[1].clone(), 
+        file_name: args[2].clone()
+    }
 }
