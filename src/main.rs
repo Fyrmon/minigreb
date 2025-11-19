@@ -2,7 +2,8 @@ use std::env;
 use std::fs;
 use std::process;
 use std::error::Error;
-use minigreb::search;
+use minigreb::search_case_sensitive;
+use minigreb::search_case_insensitive;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -22,7 +23,8 @@ fn main() {
 struct Config
 {
     query: String,
-    file_name: String
+    file_name: String,
+    ignore_case: bool
 }
 
 impl Config 
@@ -33,9 +35,12 @@ impl Config
             return Err("Not enough arguments for program to run");
         }
 
+        let ignore_case = std::env::var("IGNORE_CASE").is_ok();
+
         Ok(Config { 
             query:args[1].clone(), 
-            file_name: args[2].clone()
+            file_name: args[2].clone(),
+            ignore_case
         })
     }    
 }
@@ -44,9 +49,15 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
     let file_contents = fs::read_to_string(config.file_name)?;
 
-    for line in search(&config.query, &file_contents) {
-        println!("{line}");
-    }
+    let result = if config.ignore_case {
+        search_case_insensitive(&config.query, &file_contents)
+    } else {
+        search_case_sensitive(&config.query, &file_contents)
+    };
+
+        for line in result {
+            println!("{line}");
+        }
 
     Ok(())
 }
