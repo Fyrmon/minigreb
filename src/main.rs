@@ -40,14 +40,14 @@ impl Config
 
         let file_name = match args.next() {
             Some(arg) => arg,
-            None => return Err("Didnt get file name")
+            None => return Err("Didnt get file path")
         };
 
         let ignore_case = std::env::var("IGNORE_CASE").is_ok();
 
         Ok(Config { 
-            query:args[1].clone(), 
-            file_name: args[2].clone(),
+            query,
+            file_name,
             ignore_case
         })
     }    
