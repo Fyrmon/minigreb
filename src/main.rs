@@ -1,4 +1,5 @@
 use std::env;
+use std::fmt::Arguments;
 use std::fs;
 use std::process;
 use std::error::Error;
@@ -30,9 +31,17 @@ impl Config
 {
     fn build(mut args: impl Iterator<Item=String>) -> Result<Config, &'static str>
     {
-        if args.len() < 3 {
-            return Err("Not enough arguments for program to run");
-        }
+        args.next();
+
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didnt get a query string")
+        };
+
+        let file_name = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didnt get file name")
+        };
 
         let ignore_case = std::env::var("IGNORE_CASE").is_ok();
 
